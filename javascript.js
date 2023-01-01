@@ -1,53 +1,118 @@
-function playRound(playerSelection, computerSelection) {
-    formattedPlayerSelection = formatPlayerSelection(playerSelection);
-    if (!formattedPlayerSelection) {
-        return "Please enter either Rock, Paper or Scissors";
+function playRound(playerHandGesture, computerHandGesture) {
+    if (playerSelection.doesTieWith(computerHandGesture)) {
+        return `Tie! You both chose ${computerHandGesture.getString()}!`;
     }
-    if (formattedPlayerSelection == computerSelection) {
-        return `Tie! You both chose ${computerSelection}!`
+    if (playerSelection.beats(computerSelection)) {
+        return `You won! ${playerHandGesture.getString()} beats ${computerHandGesture.getString()}!`;
     }
-    let didPlayerWin;
-    if (formattedPlayerSelection == "Rock") {
-        didPlayerWin = computerSelection == "Scissors";
-    } else if (formattedPlayerSelection == "Paper") {
-        didPlayerWin = computerSelection == "Rock";
-    } else {
-        didPlayerWin = computerSelection == "Paper";
-    }
-    if (didPlayerWin) {
-        return `You won! ${formattedPlayerSelection} beats ${computerSelection}!`
-    }
-    return `You lost! ${computerSelection} beats ${formattedPlayerSelection}!`
+    return `You lost! ${playerHandGesture.getString()} is beaten by ${computerHandGesture.getString()}!`;
 }
 
-function formatPlayerSelection(playerSelection) {
-    if (!playerSelection || playerSelection.length < 3) {
-        return null;
+function parsePlayerSelection(playerSelectionString) {
+    let formattedPlayerSelectionString = playerSelectionString.trim().toLowerCase();
+    if (Rock.getSingleInstance().matchesLowerCaseString(formattedPlayerSelectionString)) {
+        return Rock.getSingleInstance();
+    } else if ((Paper.getSingleInstance()).matchesLowerCaseString(formattedPlayerSelectionString)) {
+        return Paper.getSingleInstance();
+    } else if ((Scissors.getSingleInstance()).matchesLowerCaseString(formattedPlayerSelectionString)) {
+        return Scissors.getSingleInstance();
     }
-    let formattedPlayerSelection = playerSelection.trim().toLowerCase();
-    formattedPlayerSelection = formattedPlayerSelection.charAt(0).toUpperCase()
-        + formattedPlayerSelection.slice(1);
-    if (formattedPlayerSelection != "Rock" && formattedPlayerSelection != "Paper" && formattedPlayerSelection != "Scissors") {
-        return null;
-    }
-    return formattedPlayerSelection;
+    return null;
 }
 
-function getComputerChoice() {
-    let computerChoice;
+function getComputerHandGesture() {
     switch (getRandomInt(3)) {
         case 0:
-            computerChoice = "Rock";
+            return new Rock();
             break;
         case 1:
-            computerChoice = "Paper";
+            return new Paper();
             break;
         case 2:
-            computerChoice = "Scissors";
+            return new Scissors();
     }
-    return computerChoice;
 }
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
+}
+
+class HandGesture {
+
+    #string;
+
+    constructor(string) {
+        this.setString(string);
+    }
+
+    getString() {
+        return this.#string;
+    }
+
+    setString(string) {
+        this.#string = string;
+    }
+
+    equals(otherHandGesture) {
+        return this.getString() == otherHandGesture.getString();
+    }
+
+    matchesLowerCaseString(lowerCaseString) {
+        return this.getString().toLowerCase() == lowerCaseString;
+    }
+
+    doesTieWith(otherHandGesture) {
+        return this.equals(otherHandGesture);
+    }
+}
+
+class Rock extends HandGesture {
+
+    static #singleInstance = new Rock();
+
+    constructor() {
+        super("Rock");
+    }
+
+    static getSingleInstance() {
+        return this.#singleInstance;
+    }
+
+    beats(otherHandGesture) {
+        return otherHandGesture.equals(Scissors.getSingleInstance());
+    }
+}
+
+class Paper extends HandGesture {
+
+    static #singleInstance = new Paper();
+
+    constructor() {
+        super("Paper");
+    } 
+    
+    static getSingleInstance() {
+        return this.#singleInstance;
+    }
+
+    beats(otherHandGesture) {
+        return otherHandGesture.equals(Rock.getSingleInstance());
+    }
+}
+
+class Scissors extends HandGesture {
+
+    static #singleInstance = new Scissors();
+
+    constructor() {
+        super("Scissors");
+    }
+
+    static getSingleInstance() {
+        return this.#singleInstance;
+    }
+
+    beats(otherHandGesture) {
+        return otherHandGesture.equals(Paper.getSingleInstance());
+    }
 }
