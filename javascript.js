@@ -1,17 +1,38 @@
+const numberOfRounds = 5;
+let numberOfRoundsPlayed = 0;
+let playerScore = 0;
+let computerScore = 0;
+
+
+function game() {
+    for (let roundNumber = 0; roundNumber < numberOfRounds; roundNumber++) {
+        let playerHandGesture;
+        while (!playerHandGesture) {
+            let playerSelectionString = prompt("Enter Rock, Paper or Scissors!");
+            playerHandGesture = parsePlayerSelectionString(playerSelectionString);
+        }
+        computerHandGesture = getComputerHandGesture();
+        console.log(playRound(playerHandGesture, computerHandGesture));
+    }
+    console.log (`player: ${playerScore} computer: ${computerScore}`);
+}
+
 function playRound(playerHandGesture, computerHandGesture) {
-    if (playerSelection.doesTieWith(computerHandGesture)) {
+    if (playerHandGesture.doesTieWith(computerHandGesture)) {
         return `Tie! You both chose ${computerHandGesture.getString()}!`;
     }
-    if (playerSelection.beats(computerSelection)) {
+    if (playerHandGesture.beats(computerHandGesture)) {
+        playerScore += 1;
         return `You won! ${playerHandGesture.getString()} beats ${computerHandGesture.getString()}!`;
     }
+    computerScore += 1;
     return `You lost! ${playerHandGesture.getString()} is beaten by ${computerHandGesture.getString()}!`;
 }
 
-function parsePlayerSelection(playerSelectionString) {
+function parsePlayerSelectionString(playerSelectionString) {
     let formattedPlayerSelectionString = playerSelectionString.trim().toLowerCase();
     for (const handGesture of getAllHandGestures()) {
-        if(handGesture.matchesLowerCaseString(formattedPlayerSelectionString)) {
+        if (handGesture.matchesLowerCaseString(formattedPlayerSelectionString)) {
             return handGesture;
         }
     }
@@ -91,8 +112,8 @@ class Paper extends HandGesture {
 
     constructor() {
         super("Paper");
-    } 
-    
+    }
+
     static getSingleInstance() {
         return this.#singleInstance;
     }
