@@ -10,14 +10,16 @@ function playRound(playerHandGesture, computerHandGesture) {
 
 function parsePlayerSelection(playerSelectionString) {
     let formattedPlayerSelectionString = playerSelectionString.trim().toLowerCase();
-    if (Rock.getSingleInstance().matchesLowerCaseString(formattedPlayerSelectionString)) {
-        return Rock.getSingleInstance();
-    } else if ((Paper.getSingleInstance()).matchesLowerCaseString(formattedPlayerSelectionString)) {
-        return Paper.getSingleInstance();
-    } else if ((Scissors.getSingleInstance()).matchesLowerCaseString(formattedPlayerSelectionString)) {
-        return Scissors.getSingleInstance();
+    for (const handGesture of getAllHandGestures()) {
+        if(handGesture.matchesLowerCaseString(formattedPlayerSelectionString)) {
+            return handGesture;
+        }
     }
     return null;
+}
+
+function getAllHandGestures() {
+    return [Rock.getSingleInstance(), Paper.getSingleInstance(), Scissors.getSingleInstance()];
 }
 
 function getComputerHandGesture() {
