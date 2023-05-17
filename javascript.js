@@ -1,23 +1,74 @@
-const numberOfRounds = 5;
-let numberOfRoundsPlayed = 0;
+const WINNING_SCORE = 5;
 let playerScore = 0;
 let computerScore = 0;
+let gameEnded = false;
+const roundDisplay = document.querySelector('#round-display');
+const scoreDisplay = document.querySelector('#score-display');
+const gameEndDisplay = document.querySelector('#game-end-display');
+const rockButton = document.querySelector('#rock-button');
+const scissorsButton = document.querySelector('#scissors-button');
+const paperButton = document.querySelector('#paper-button');
 
+main();
 
-function game() {
-    for (let roundNumber = 0; roundNumber < numberOfRounds; roundNumber++) {
-        let playerHandGesture;
-        while (!playerHandGesture) {
-            let playerSelectionString = prompt("Enter Rock, Paper or Scissors!");
-            playerHandGesture = parsePlayerSelectionString(playerSelectionString);
-        }
-        computerHandGesture = getComputerHandGesture();
-        console.log(playRound(playerHandGesture, computerHandGesture));
-    }
-    console.log (`player: ${playerScore} computer: ${computerScore}`);
+function main() {
+    rockButton.addEventListener('click', playRock);
+    paperButton.addEventListener('click', playPaper);
+    scissorsButton.addEventListener('click', playScissors);
+    roundDisplay.textContent = 'Click Rock, Paper or Scissors!';
+    updateGameStatus();
 }
 
-function playRound(playerHandGesture, computerHandGesture) {
+function playRock() {
+    let playerHandGesture = Rock.getSingleInstance();
+    playRound(playerHandGesture);
+}
+
+function playPaper() {
+    let playerHandGesture = Paper.getSingleInstance();
+    playRound(playerHandGesture);
+}
+
+function playScissors() {
+    let playerHandGesture = Scissors.getSingleInstance();
+    playRound(playerHandGesture);
+}
+
+function updateGameStatus() {
+    let scoreDisplayString = `player: ${playerScore} computer: ${computerScore}.`;
+    console.log(scoreDisplayString);
+    scoreDisplay.textContent = scoreDisplayString;
+    let gameEndDisplayString = '';
+    if(playerScore == WINNING_SCORE) {
+        gameEnded = true;
+        gameEndDisplayString = 'You\'ve won the game!';
+        console.log(gameEndDisplayString);
+    } else if (computerScore == WINNING_SCORE) {
+        gameEnded = true;
+        gameEndDisplayString = 'The computer has won the game!';
+        console.log(gameEndDisplayString);
+    }
+    gameEndDisplay.textContent = gameEndDisplayString;
+}
+
+function resetGameStatusIfNecessary() {
+    if(gameEnded) {
+        playerScore = 0;
+        computerScore = 0;
+        gameEnded = false;
+    }
+}
+
+function playRound(playerHandGesture) {
+    resetGameStatusIfNecessary();
+    let computerHandGesture = getComputerHandGesture();
+    let results = doPlayRound(playerHandGesture, computerHandGesture);
+    console.log(results);
+    roundDisplay .textContent = results;
+    updateGameStatus();
+}
+
+function doPlayRound(playerHandGesture, computerHandGesture) {
     if (playerHandGesture.doesTieWith(computerHandGesture)) {
         return `Tie! You both chose ${computerHandGesture.getString()}!`;
     }
